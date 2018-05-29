@@ -26,5 +26,8 @@
 	c. 소켓서버 생성이후(var socketio = require('socket.io');) connection 이벤트를 걸어 소켓서버가   동작하도록 함.  
   
 4. ISSUE : SET DUBUG 모드가 작동되지 않는다.(로그가 올라오지 않음.)	  
+	a.  npm install file-system --save 가 빠졌었음. fs.readefile을 동작하지 못해서 에러가 났었음.  
+	서버를 직접 안띄우고 로그만 보고 있어서 몰랐음..(var fs = require('file-system'); 추가)  
+	==> 그러나 안된당..!  
 
 
