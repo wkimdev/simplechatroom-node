@@ -1,20 +1,25 @@
-var express = express();
+var express = require('express');
 var app = express();
-var socketio = require('socket.io');
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
-//web server 생성
-var server = http.createServer(function(req, res) {
-    //html 파일을 읽는다.
-    fs.readFile('HTMLPage.html', function(err, data){
-        res.writeHead(200, { 'Content-Type':'text/html' });
-        res.end(data);
-    });
-}).listen(52273, function(){
-    console.log('server running at http://127.0.0.1:52273');
+app.get('/', function(req, res){
+    res.sendfile('index.html');
 });
 
-//소켓 서버를 생성 및 실행
-var io = socketio.listen(server);
-io.sockets.on('connection', function (socket) {
-    
+//chat event
+io.on('connection', function(socket) {
+    console.log('a user connected');
+
+    socket.on('chat message', function(msg){
+        console.log('message: ' + msg);
+    });
+    //각 소켓은 특별히 disconnect 이벤트를 발생시킨다.
+    socket.on('disconnect', function() {
+        console.log('user disconnected');
+    });
+});
+
+http.listen(3007, function(){
+    console.log('listening on *:3007');
 });
