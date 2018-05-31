@@ -1,39 +1,36 @@
-var express = require('express');
-var app = express();
-var http = require('http').server(app);
-var server = require('http').createServer(app);
-var fs = require('file-system');
-var io = require('socket.io')(server);
+//모듈 추출
+const socketIo = require('socket.io');
+const express = require('express');
+const http = require('http');
 
-//debug설정
-var debug = require('debug')('socket.io');
+//객체를 선언
+const app = express();
+const server = http.createServer(app);
+const io = socketIo.listen(server);
 
-//web server 생성
-app.get('/', function(req, res) {
-    fs.readFile('HTMLPage.html', function(err, data){
-        res.writeHead(200, { 'Content-Type':'text/html' });
-        res.end(data);
+//미들웨어를 설정
+app.use(express.static(`${__dirname}/public`));
+
+//웹 소켓을 설정
+io.sockets.on('connection', (socket) => {
+    //socket객체가 가지는 메서드,
+    // 위의 이벤트 핸들러 일때 발생하거나
+    // 클라에서 window.~ 에서 io.connect 발생할때!
+
+    //1초 마다 주고받도록 구성한다.
+    setInterval(() => {
+    socket.emit('ABCD', {
+        message: 'FROM Server'
     });
+    }, 1000);
+
+    socket.on('ABCD', (data) => {
+        console.log(data);
+    });
+    
 });
 
-server.listen(52273, function() {
-    console.log('server running at http://127.0.0.1:52273');
+server.listen(52273, () => {
+    console.log('server running at http://localhost:52273');
 });
 
-// var server = http.createServer(function(req, res) {
-//     //html 파일을 읽는다.
-//     fs.readFile('HTMLPage.html', function(err, data){
-//         res.writeHead(200, { 'Content-Type':'text/html' });
-//         res.end(data);
-//     });
-// }).listen(52273, function(){
-//     console.log('server running at http://127.0.0.1:52273');
-// });
-
-//소켓 서버를 생성 및 실행
-//connection 이벤트를 연결시킨다. connection 이벤트는 클라가 웹 소켓 서버에 접속할때 발생한다.
-// var io = socketio.listen(server);
-// io.sockets.on
-io.on('connection', function (socket) {
-    console.log('connection is succeed');
-});
